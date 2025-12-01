@@ -20,7 +20,8 @@ fn main() {
             for rotation in rotations {
                 dial.rotate(rotation);
             }
-            println!("The password is {}", dial.get_password())
+            println!("The part1 password is {}", dial.get_part1_password());
+            println!("The part2 password is {}", dial.get_part2_password());
         }
         Err(file_error) => println!("Failed to open puzzle input with error {}", file_error),
     }

@@ -1,29 +1,46 @@
+use num::traits::Euclid;
+
 use crate::rotation::Rotation;
 
 pub struct Dial {
     position: usize,
     size: usize,
     password: usize,
+    rotations: usize,
 }
 
 impl Dial {
     pub fn rotate(&mut self, rotation: Rotation) {
+        let steps = match rotation {
+            Rotation::L { count } => count,
+            Rotation::R { count } => count,
+        };
+
+        let (full_rotations, remaining_steps) = Euclid::div_rem_euclid(&steps, &(self.size + 1));
+
+        // Full rotations does not happen in the provided example but will probably happen with
+        // the given input file.
+        self.rotations += full_rotations;
+
         match rotation {
-            Rotation::L { count } => {
-                let actual_rotation = count % (self.size + 1);
-                if actual_rotation > self.position {
-                    self.position = self.size - (actual_rotation - self.position) + 1;
+            Rotation::L { count: _ } => {
+                if remaining_steps > self.position {
+                    if self.position != 0 {
+                        self.rotations += 1;
+                    }
+                    self.position = self.size - (remaining_steps - self.position) + 1;
                 } else {
-                    self.position -= actual_rotation;
+                    self.position -= remaining_steps;
                 }
             }
-            Rotation::R { count } => {
-                let actual_rotation = count % (self.size + 1);
-
-                if self.position + actual_rotation > self.size {
-                    self.position = actual_rotation - (self.size - self.position) - 1;
+            Rotation::R { count: _ } => {
+                if self.position + remaining_steps > self.size {
+                    self.position = remaining_steps - (self.size - self.position) - 1;
+                    if self.position != 0 {
+                        self.rotations += 1;
+                    }
                 } else {
-                    self.position += actual_rotation
+                    self.position += remaining_steps
                 }
             }
         }
@@ -32,8 +49,12 @@ impl Dial {
         }
     }
 
-    pub fn get_password(&self) -> usize {
+    pub fn get_part1_password(&self) -> usize {
         self.password
+    }
+
+    pub fn get_part2_password(&self) -> usize {
+        self.rotations + self.password
     }
 }
 
@@ -43,6 +64,7 @@ impl Default for Dial {
             size: 99,
             position: 50,
             password: 0,
+            rotations: 0,
         }
     }
 }
@@ -57,6 +79,7 @@ mod tests {
         dial.position = 99;
         dial.rotate(Rotation::L { count: 99 });
         assert_eq!(dial.position, 0);
+        assert_eq!(dial.get_part2_password(), 1);
     }
 
     #[test]
@@ -64,6 +87,7 @@ mod tests {
         let mut dial = Dial::default();
         dial.rotate(Rotation::L { count: 5 });
         assert_eq!(dial.position, 45);
+        assert_eq!(dial.get_part2_password(), 0);
     }
 
     #[test]
@@ -71,13 +95,15 @@ mod tests {
         let mut dial = Dial::default();
         dial.rotate(Rotation::L { count: 68 });
         assert_eq!(dial.position, 82);
+        assert_eq!(dial.get_part2_password(), 1);
     }
 
     #[test]
     fn rotate_left_landing_at_zero() {
         let mut dial = Dial::default();
-        dial.rotate(Rotation::R { count: 50 });
+        dial.rotate(Rotation::L { count: 50 });
         assert_eq!(dial.position, 0);
+        assert_eq!(dial.get_part2_password(), 1);
     }
 
     #[test]
@@ -114,7 +140,7 @@ mod tests {
     }
 
     #[test]
-    fn test_example() {
+    fn test_part1_example() {
         let mut dial = Dial::default();
 
         dial.rotate(Rotation::L { count: 68 });
@@ -147,6 +173,56 @@ mod tests {
         dial.rotate(Rotation::L { count: 82 });
         assert_eq!(dial.position, 32);
 
-        assert_eq!(dial.get_password(), 3);
+        assert_eq!(dial.get_part1_password(), 3);
+    }
+
+    #[test]
+    fn test_part2_example() {
+        let mut dial = Dial::default();
+
+        dial.rotate(Rotation::L { count: 68 });
+        assert_eq!(dial.position, 82);
+
+        dial.rotate(Rotation::L { count: 30 });
+        assert_eq!(dial.position, 52);
+
+        dial.rotate(Rotation::R { count: 48 });
+        assert_eq!(dial.position, 0);
+
+        dial.rotate(Rotation::L { count: 5 });
+        assert_eq!(dial.position, 95);
+
+        dial.rotate(Rotation::R { count: 60 });
+        assert_eq!(dial.position, 55);
+
+        dial.rotate(Rotation::L { count: 55 });
+        assert_eq!(dial.position, 0);
+
+        dial.rotate(Rotation::L { count: 1 });
+        assert_eq!(dial.position, 99);
+
+        dial.rotate(Rotation::L { count: 99 });
+        assert_eq!(dial.position, 0);
+
+        dial.rotate(Rotation::R { count: 14 });
+        assert_eq!(dial.position, 14);
+
+        dial.rotate(Rotation::L { count: 82 });
+        assert_eq!(dial.position, 32);
+
+        assert_eq!(dial.get_part2_password(), 6);
+    }
+
+    #[test]
+    fn test_part2_example_2() {
+        let mut dial = Dial::default();
+        dial.rotate(Rotation::L { count: 1000 });
+        assert_eq!(dial.get_part2_password(), 10);
+        assert_eq!(dial.position, 50);
+
+        let mut dial = Dial::default();
+        dial.rotate(Rotation::R { count: 1000 });
+        assert_eq!(dial.get_part2_password(), 10);
+        assert_eq!(dial.position, 50);
     }
 }
