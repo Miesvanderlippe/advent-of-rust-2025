@@ -1,4 +1,6 @@
-pub mod repeats;
+pub mod part1;
+pub mod part2;
+pub mod pattern;
 
 use nom::Parser;
 use nom::character::complete::usize;
