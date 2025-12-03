@@ -60,4 +60,15 @@ day_03_bench    fastest       │ slowest       │ median        │ mean      
 ╰─ part_2_main  196.2 µs      │ 295.8 µs      │ 214.1 µs      │ 220.8 µs      │ 100     │ 100
 ```
 
+Using an array of length 12 instead of a vec of a length defined in the function parameters (but 
+statically so) closes the gap a bit from 290x to 92x; 
+
+```
+     Running benches/benchmarks.rs (target/release/deps/day_03_bench-484f332befbee662)
+Timer precision: 41 ns
+day_03_bench    fastest       │ slowest       │ median        │ mean          │ samples │ iters
+├─ part_2_alt   457.5 ns      │ 17.37 µs      │ 499.5 ns      │ 687.4 ns      │ 100     │ 100
+╰─ part_2_main  69.91 µs      │ 130.1 µs      │ 70.16 µs      │ 82.85 µs      │ 100     │ 100
+```
+
 The benchmark iterates over the entire input file.

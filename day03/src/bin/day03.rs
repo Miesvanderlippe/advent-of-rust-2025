@@ -20,9 +20,9 @@ fn main() {
                 .lines()
                 .fold(0, |acc: usize, line| acc + highest_joltage(line.as_bytes()));
 
-            let part_2_ans = text.lines().fold(0, |acc: usize, line| {
-                acc + mega_joltage(line.as_bytes(), 12)
-            });
+            let part_2_ans = text
+                .lines()
+                .fold(0, |acc: usize, line| acc + mega_joltage(line.as_bytes()));
 
             println!("Combined joltage: {}", part_1_ans);
             println!("MEGA joltage: {}", part_2_ans);
