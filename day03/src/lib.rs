@@ -47,6 +47,38 @@ pub fn mega_joltage(cells: &[u8], series_len: usize) -> usize {
     combined_joltage
 }
 
+pub fn mega_joltage_alt(cells: &[u8], joltage_len: usize) -> usize {
+    let mut joltage_digits: Vec<u8> = vec![0; joltage_len];
+
+    let number_of_cells = cells.len();
+    // The last digit in cells that has already been taken by a
+    // preceding digit in the output.
+    let mut cursor = 0;
+
+    for joltage_digit in 0..joltage_len {
+        // The first digit of our output cannot start too close to the end.
+        let last_valid_digit = number_of_cells - (joltage_len - joltage_digit);
+        for cell_index in cursor..=last_valid_digit {
+            if cells[cell_index] > joltage_digits[joltage_digit] {
+                joltage_digits[joltage_digit] = cells[cell_index];
+                cursor = cell_index + 1;
+                if cells[cell_index] == 48 + 9 {
+                    break;
+                }
+            }
+        }
+    }
+
+    let mut combined_joltage: usize = joltage_digits[joltage_len - 1] as usize - 48_usize;
+
+    for si in 1..joltage_len {
+        combined_joltage +=
+            10_usize.pow(si as u32) * (joltage_digits[joltage_len - si - 1] as usize - 48_usize);
+    }
+
+    combined_joltage
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -65,5 +97,25 @@ mod tests {
         assert_eq!(mega_joltage("811111111111119".as_bytes(), 12), 811111111119);
         assert_eq!(mega_joltage("234234234234278".as_bytes(), 12), 434234234278);
         assert_eq!(mega_joltage("818181911112111".as_bytes(), 12), 888911112111);
+    }
+
+    #[test]
+    fn test_part_2_alt() {
+        assert_eq!(
+            mega_joltage_alt("987654321111111".as_bytes(), 12),
+            987654321111
+        );
+        assert_eq!(
+            mega_joltage_alt("811111111111119".as_bytes(), 12),
+            811111111119
+        );
+        assert_eq!(
+            mega_joltage_alt("234234234234278".as_bytes(), 12),
+            434234234278
+        );
+        assert_eq!(
+            mega_joltage_alt("818181911112111".as_bytes(), 12),
+            888911112111
+        );
     }
 }
