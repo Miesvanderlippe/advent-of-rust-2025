@@ -26,12 +26,10 @@ pub fn mega_joltage(cells: &[u8], series_len: usize) -> usize {
     let number_of_cells = cells.len();
 
     // 0 - 100 in the input data.
-    for cell_index in 0..number_of_cells {
+    for cell_index in 0..=number_of_cells - series_len {
         // 0 - 12 in the part 2 exercise.
         for series_index in 0..series_len {
-            if number_of_cells >= cell_index + series_len
-                && cells[cell_index + series_index] > joltages[series_index]
-            {
+            if cells[cell_index + series_index] > joltages[series_index] {
                 for ji in series_index..series_len {
                     joltages[ji] = cells[cell_index + ji]
                 }
