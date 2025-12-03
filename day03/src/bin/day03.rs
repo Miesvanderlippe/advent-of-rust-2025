@@ -1,7 +1,7 @@
 use std::{fs, path::PathBuf};
 
 use clap::Parser;
-use day03::highest_joltage;
+use day03::{highest_joltage, mega_joltage};
 
 #[derive(Parser, Debug)]
 struct Cli {
@@ -19,7 +19,13 @@ fn main() {
             let part_1_ans = text
                 .lines()
                 .fold(0, |acc: usize, line| acc + highest_joltage(line.as_bytes()));
-            println!("Combined joltage: {}", part_1_ans)
+
+            let part_2_ans = text.lines().fold(0, |acc: usize, line| {
+                acc + mega_joltage(line.as_bytes(), 12)
+            });
+
+            println!("Combined joltage: {}", part_1_ans);
+            println!("MEGA joltage: {}", part_2_ans);
         }
         Err(file_error) => println!("Failed to open puzzle input with error {}", file_error),
     }
