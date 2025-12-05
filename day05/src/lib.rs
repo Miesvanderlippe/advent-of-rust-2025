@@ -67,11 +67,11 @@ pub fn solve_part_2(fresh_ranges: &Vec<(usize, usize)>) -> usize {
                 new_end = cr_end
             }
         }
-        delete_indexes.sort();
-        delete_indexes.reverse();
-        for di in delete_indexes {
-            condensed_ranges.remove(di);
-        }
+
+        delete_indexes.iter().rev().for_each(|di| {
+            condensed_ranges.remove(*di);
+        });
+
         condensed_ranges.push((new_start, new_end));
     }
 
